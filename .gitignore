@@ -131,9 +131,9 @@ portfolio-env/
 
 # Configs
 .vscode/
- 
-# Environments 
-ocvm-env/ 
- 
-# Secrets files 
-secrets.txt 
+
+# Environments
+ocvm-env/
+
+# Secrets files
+secrets.txt
