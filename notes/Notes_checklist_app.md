@@ -15,7 +15,6 @@ The input video is required to have a few seconds of background in the first few
 
 - Create a django project
 - Deploy to python anywhere
-- Add a remote in local
 
 ## A homepage where people upload their videos through an upload form
 
