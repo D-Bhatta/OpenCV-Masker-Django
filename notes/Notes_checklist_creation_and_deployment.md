@@ -2,14 +2,12 @@
 
 - Create a django project
 - Deploy to python anywhere
-- Add a remote in local
 
 ## Main tasks
 
 - Create a django project `django_apps`
 - Create a django app called `opencv_masker`
 - Deploy to pythonanywhere
-- Add pythonanywhere as a remote
 
 ## Create a django project `django_apps`
 
@@ -25,7 +23,7 @@
 - Use `dotenv` to set environment variables in `settings.py`
 - Add to git
 - Add static files
-- Add a view to serve `dummy.html` at ""
+- Add a view to serve `dummy.html` at `masker/`
 - Add `base.html` templates
 - Add a `dummy.html` template
 - Run and refactor
@@ -37,10 +35,6 @@
 - Pull from git
 - Create environment
 - Collect static
-- Follow tutorial here
+- Follow tutorial [here](https://help.pythonanywhere.com/pages/DeployExistingDjangoProject/)
 - Add static assets
 - Run and refactor
-
-## Add pythonanywhere as a remote
-
-- Research how to add pythonanywhere as a remote
