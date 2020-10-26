@@ -1,22 +1,37 @@
 # OpenCV-Masker-Django
 
-Django app that utilizes the OpenCV-Masker algorithm to mask colors in a video
+Notes and code about OpenCV-Masker-Django
 
 ## Sections
 
 - [OpenCV-Masker-Django](#opencv-masker-django)
   - [Sections](#sections)
-  - [Project Status](#project-status)
+  - [Notes](#notes)
+  - [Note Heading](#note-heading)
   - [Additional Information](#additional-information)
     - [Screenshots](#screenshots)
     - [Links](#links)
+  - [Notes template](#notes-template)
 
-## Project Status
+## Notes
 
-Project is currently under development.
+Note information.
+
+## Note Heading
+
+1. .
 
 ## Additional Information
 
 ### Screenshots
 
 ### Links
+
+## Notes template
+
+```python
+```
+
+```html
+
+```
