@@ -13,7 +13,6 @@
 - Link the form
 - Research how to upload files and use checklists
 
-
 ## Create a view
 
 - Create a `homepage` view function
