@@ -45,7 +45,33 @@ except KeyError:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Find out what environment we are running in
+# Get the hostname
+try:
+    DJANGO_ENVIRONMENT = os.environ["DJANGO_ENVIRONMENT"]
+    DJANGO_HOST_NAME = os.environ["DJANGO_HOST_NAME"]
+except KeyError:
+    path_env = os.path.join(BASE_DIR, ".env")
+    dotenv.read_dotenv(path_env)
+    DJANGO_ENVIRONMENT = os.environ["DJANGO_ENVIRONMENT"]
+    DJANGO_HOST_NAME = os.environ["DJANGO_HOST_NAME"]
+
+if DJANGO_ENVIRONMENT == "PRODUCTION":
+    ALLOWED_HOSTS = [
+        DJANGO_HOST_NAME,
+    ]
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "django_apps/static/django_apps"),
+        os.path.join(BASE_DIR, "opencv_masker/static/opencv_masker"),
+    ]
+elif DJANGO_ENVIRONMENT == "DEVELOPMENT":
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "django_apps\\static\\django_apps"),
+        os.path.join(BASE_DIR, "opencv_masker\\static\\opencv_masker"),
+    ]
+    ALLOWED_HOSTS = []
+else:
+    pass
 
 
 # Application definition
@@ -75,7 +101,7 @@ ROOT_URLCONF = "django_apps.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": ["django_apps/templates/"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -139,3 +165,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
