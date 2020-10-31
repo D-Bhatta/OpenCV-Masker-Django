@@ -274,14 +274,18 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 ```
 
 - Run and refactor
+- Add a logo
 
 ### Deploy to pythonanywhere
 
 - Pull from git
 - Create environment
+- Install dependencies
 - Collect static
 - Follow tutorial [here](https://help.pythonanywhere.com/pages/DeployExistingDjangoProject/)
+- Working and source code directories are the ones with `manage.py` in them
 - Add static assets
+- Enable HTTPS
 - Run and refactor
 
 ## Additional Information
