@@ -38,8 +38,7 @@
 
 ## Add the videos
 
-- Add an input and output video to `static/video` folder
-- Add a `video` tag and serve the static videos
+- Upload to YouTube and embed
 - Run and refactor
 
 ## Link the form
