@@ -15,12 +15,11 @@
         <vstack spacing="xs">
           <aside class="pa-s">
             <vstack>
-              <form action="#" method="POST">
-                <!-- {% csrf_token %} -->
+              <form action="{% url 'homepage' %}" method="POST">
+                {% csrf_token %}
                 <vstack spacing="s">
                   <vstack>
-                    <!-- {{form}} -->
-                    <input type="file" name="video" id="video" />
+                    {{form}}
                     <button type="upload" name="button">Upload Video</button>
                   </vstack>
                 </vstack>
