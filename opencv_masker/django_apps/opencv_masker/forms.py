@@ -2,8 +2,8 @@ from django import forms
 
 
 class VideoUploadForm(forms.Form):
-    video = forms.FileField(
-        widget=forms.FileInput(
+    video = forms.CharField(
+        widget=forms.TextInput(
             attrs={
                 "type": "upload",
                 "placeholder": "Choose a file",
