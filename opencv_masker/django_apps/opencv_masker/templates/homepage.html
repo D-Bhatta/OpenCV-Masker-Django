@@ -1,0 +1,35 @@
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<head>
+  <title>OpenCV Masker</title>
+</head>
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h1>Welcome to OpenCV Masker</h1>
+        <p>Add instructions here</p>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form action="#" method="POST">
+                <!-- {% csrf_token %} -->
+                <vstack spacing="s">
+                  <vstack>
+                    <!-- {{form}} -->
+                    <input type="file" name="video" id="video" />
+                    <button type="upload" name="button">Upload Video</button>
+                  </vstack>
+                </vstack>
+              </form>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
