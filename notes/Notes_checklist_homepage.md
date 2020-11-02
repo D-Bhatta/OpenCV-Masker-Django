@@ -50,3 +50,14 @@
 
 - Research how to upload files and use checklists
 - Create plan for it
+
+## Modify form to upload files
+
+- Change `TextField` to `FileField`
+- Add a `ClearableFileInput` widget
+- Set attrs
+- Run and refactor
+- Create validation function `check_validation` and pass
+- Add to `validators` parameter
+- Run and refactor
+- Check validation for file size, type, and extension
