@@ -26,13 +26,13 @@ def homepage(request):
     if request.method == "POST":
         lg.debug("Request is post")
         # set form data in form object
-        form = VideoUploadForm(request.POST)
+        form = VideoUploadForm(request.POST, request.FILES)
         # check form validity
         if form.is_valid():
             lg.debug("Form is valid")
             return render(request, "dummy.html", {})
         else:
-            error_message = "Invalid Form"
+            error_message = "Invalid Form:\n" + str(form.errors)
             lg.error(error_message)
             raise Http404(error_message)
 
