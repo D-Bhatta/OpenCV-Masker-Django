@@ -1,4 +1,39 @@
+import logging
+import logging.config
+from json import load as jload
+from pathlib import Path
+
 from django.core.management.utils import get_random_secret_key
+
+
+def get_logger():
+    r"""Return a logger.
+
+    Configure logger lg with config for appLogger from config.json["logging"],
+    and return it.
+    Might need to configure the log path manually.
+
+    Returns
+    -------
+    lg
+        Logger object.
+
+    Examples
+    --------
+    Get the logging object and use it to log
+
+    >>> lg = get_logger()
+    >>> lg.debug("Form is valid")
+    appLogger - 2020-11-05 23:52:35,166-2984-DEBUG-Form is valid
+    """
+    # Configure logger lg with config for appLogger from config.json["logging"]
+    CONFIG_DIR = Path(__file__).resolve().parent.parent.parent.parent
+    with open(CONFIG_DIR / "config.json", "r") as f:
+        config = jload(f)
+        logging.config.dictConfig(config["logging"])
+    lg = logging.getLogger("appLogger")
+    # lg.debug("This is a debug message")
+    return lg
 
 
 def generate_secret_key(env_file_name):

@@ -38,8 +38,7 @@
 
 ## Add the videos
 
-- Add an input and output video to `static/video` folder
-- Add a `video` tag and serve the static videos
+- Upload to YouTube and embed
 - Run and refactor
 
 ## Link the form
@@ -51,3 +50,17 @@
 
 - Research how to upload files and use checklists
 - Create plan for it
+
+## Modify form to upload files
+
+- Change `TextField` to `FileField`
+- Add a `ClearableFileInput` widget
+- Set attrs
+- Run and refactor
+- Create validation function `check_validation_file_upload` for file size, extension and type and `pass`
+- Create functions `check_validation_file_upload_size`, `check_validation_file_upload_type`, `check_validation_file_upload_extension` file size, extension and type and `pass`
+- Add to `validators` parameter
+- Add a logging function
+- Run and refactor
+- Check validation for file size, type, and extension
+- Run and refactor

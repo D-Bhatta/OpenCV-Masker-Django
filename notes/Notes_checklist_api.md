@@ -24,6 +24,9 @@
 ## Get video from the request and store it if necessary
 
 - Get video from the request and store it
+- Create a function `store_file(name: str, path: str, and file: FileType)`
+- Create media root directory
+- Store file in media root directory
 - Refactor and run
 
 ## Pass it to class `Masker` function `apply_mask`
