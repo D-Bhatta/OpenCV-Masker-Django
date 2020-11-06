@@ -12,10 +12,21 @@ Notes and code about OpenCV-Masker-Django
     - [Create a django project `django_apps`](#create-a-django-project-django_apps)
     - [Create a django app called `opencv_masker`](#create-a-django-app-called-opencv_masker)
     - [Deploy to pythonanywhere](#deploy-to-pythonanywhere)
+  - [A homepage where people upload their videos through an upload form](#a-homepage-where-people-upload-their-videos-through-an-upload-form)
+    - [Main tasks](#main-tasks-1)
+    - [Create a view](#create-a-view)
+    - [Create a homepage](#create-a-homepage)
+    - [Add a form element with a dummy link](#add-a-form-element-with-a-dummy-link)
+    - [Add the videos](#add-the-videos)
+    - [Link the form](#link-the-form)
+    - [Research how to upload files and use checklists](#research-how-to-upload-files-and-use-checklists)
+  - [Modify form to upload files](#modify-form-to-upload-files)
   - [Additional Information](#additional-information)
     - [Screenshots](#screenshots)
     - [Links](#links)
   - [Notes template](#notes-template)
+
+<!-- markdownlint-disable-file MD024 -->
 
 ## Notes
 
@@ -287,6 +298,384 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 - Add static assets
 - Enable HTTPS
 - Run and refactor
+
+## A homepage where people upload their videos through an upload form
+
+- Create a homepage with a heading and instructions and example videos
+- Add a form with upload button and a check list with `blue` and `red` on it
+- Link the form destination to it
+
+### Main tasks
+
+- Create a view
+- Create a homepage
+- Add a form element with a dummy link
+- Add the videos
+- Link the form
+- Research how to upload files and use checklists
+
+### Create a view
+
+- Create a `homepage` view function
+- Add an url to `home/`
+- Serve `dummy.html`
+- Run and refactor
+
+### Create a homepage
+
+- Create a `homepage.html`
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<head>
+  <title>OpenCV Masker</title>
+</head>
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h1>Welcome to OpenCV Masker</h1>
+        <p>Add instructions here</p>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form action="#" method="POST">
+                <!-- {% csrf_token %} -->
+                <vstack spacing="s">
+                  <vstack>
+                    <!-- {{form}} -->
+                    <input type="file" name="video" id="video" />
+                    <button type="upload" name="button">Upload Video</button>
+                  </vstack>
+                </vstack>
+              </form>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+- Add a heading
+- Add a dummy instruction paragraph
+- Add a form element
+- Run and refactor
+
+### Add a form element with a dummy link
+
+- Create a `Form` in `forms.py` as `VideoUploadForm`
+
+```python
+from django import forms
+
+
+class VideoUploadForm(forms.Form):
+    video = forms.FileField(
+        widget=forms.ClearableFileInput(
+            attrs={
+                "label": "Choose a file",
+                "name": "video_upload",
+                "id": "video_upload",
+                "multiple": False,
+            }
+        )
+    )
+```
+
+- Add a `TextField` with a `TextInput` `Widget`
+- Add it to the `context` variable of the `homepage` view function
+
+```python
+def homepage(request):
+    # Create form object
+    form = VideoUploadForm()
+
+    # On data sent via form
+    if request.method == "POST":
+        lg.debug("Request is post")
+        # set form data in form object
+        form = VideoUploadForm(request.POST, request.FILES)
+        # check form validity
+        if form.is_valid():
+            lg.debug("Form is valid")
+            return render(request, "dummy.html", {})
+        else:
+            error_message = "Invalid Form:\n" + str(form.errors)
+            lg.error(error_message)
+            raise Http404(error_message)
+
+    context = {"form": form}
+    lg.debug("Rendering homepage")
+    return render(request, "homepage.html", context)
+```
+
+- Place it in `homepage.html`
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<head>
+  <title>OpenCV Masker</title>
+</head>
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h1>Welcome to OpenCV Masker</h1>
+        <p>Add instructions here</p>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="l">
+        <vstack spacing="xs">
+          <aside class="pa-s">
+            <vstack>
+              <form
+                action="{% url 'homepage' %}"
+                method="POST"
+                enctype="multipart/form-data"
+              >
+                {% csrf_token %}
+                <vstack spacing="s">
+                  <vstack>
+                    {{form}}
+                    <button type="submit" name="button">Upload Video</button>
+                  </vstack>
+                </vstack>
+              </form>
+            </vstack>
+          </aside>
+        </vstack>
+      </vstack>
+      <spacer></spacer>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+- Run and refactor
+
+### Add the videos
+
+- Upload to YouTube and embed
+
+```html
+      <spacer></spacer>
+      <vstack spacing="xs">
+        <aside>
+          <dl>
+            <vstack>
+              <vstack class="pa-s">
+                <h3>Input Video sample</h3>
+                <p>A sample input video</p>
+              </vstack>
+              <hr />
+              <vstack spacing="m" class="pa-s">
+                <vstack align-x="center">
+                  <iframe
+                    width="640"
+                    height="480"
+                    src="https://www.youtube.com/embed/zWH5yFCHgoA"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                </vstack>
+              </vstack>
+            </vstack>
+          </dl>
+        </aside>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="xs">
+        <aside>
+          <dl>
+            <vstack>
+              <vstack class="pa-s">
+                <h3>Output Video sample</h3>
+                <p>A sample output video</p>
+              </vstack>
+              <hr />
+              <vstack spacing="m" class="pa-s">
+                <vstack align-x="center">
+                  <iframe
+                    width="640"
+                    height="480"
+                    src="https://www.youtube.com/embed/Br0PzOEdTY8"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                </vstack>
+              </vstack>
+            </vstack>
+          </dl>
+        </aside>
+      </vstack>
+      <spacer></spacer>
+    </vstack>
+  </main>
+```
+
+- Run and refactor
+
+### Link the form
+
+- Link the form to render `dummy.html`
+
+```python
+# On data sent via form
+if request.method == "POST":
+    lg.debug("Request is post")
+    # set form data in form object
+    form = VideoUploadForm(request.POST)
+    # check form validity
+    if form.is_valid():
+        lg.debug("Form is valid")
+        return render(request, "dummy.html", {})
+```
+
+- Link the form to the actual api view
+
+### Research how to upload files and use checklists
+
+- Research how to upload files and use checklists
+- Create plan for it
+
+## Modify form to upload files
+
+- Change `TextField` to `FileField`
+- Add a `ClearableFileInput` widget
+- Set attrs
+- Run and refactor
+
+```python
+class VideoUploadForm(forms.Form):
+    video = forms.FileField(
+        widget=forms.ClearableFileInput(
+            attrs={
+                "label": "Choose a file",
+                "name": "video_upload",
+                "id": "video_upload",
+                "multiple": False,
+            }
+        )
+    )
+```
+
+- Create validation function `check_validation_file_upload` for file size, extension and type and `pass` in `validators.py`
+- Create functions `check_validation_file_upload_size`, `check_validation_file_upload_type`, `check_validation_file_upload_extension` file size, extension and type and `pass`
+- Add to `validators` parameter
+
+```python
+from opencv_masker.validators import check_validation_file_upload
+
+
+class VideoUploadForm(forms.Form):
+    video = forms.FileField(
+        widget=forms.ClearableFileInput(
+            attrs={
+                "label": "Choose a file",
+                "name": "video_upload",
+                "id": "video_upload",
+                "multiple": False,
+            }
+        ),
+        validators=[check_validation_file_upload],
+    )
+```
+
+- Add a logging function
+
+```python
+import logging
+import logging.config
+from json import load as jload
+from pathlib import Path
+
+
+def get_logger():
+    r"""Return a logger.
+
+    Configure logger lg with config for appLogger from config.json["logging"],
+    and return it.
+    Might need to configure the log path manually.
+
+    Returns
+    -------
+    lg
+        Logger object.
+
+    Examples
+    --------
+    Get the logging object and use it to log
+
+    >>> lg = get_logger()
+    >>> lg.debug("Form is valid")
+    appLogger - 2020-11-05 23:52:35,166-2984-DEBUG-Form is valid
+    """
+    # Configure logger lg with config for appLogger from config.json["logging"]
+    CONFIG_DIR = Path(__file__).resolve().parent.parent.parent.parent
+    with open(CONFIG_DIR / "config.json", "r") as f:
+        config = jload(f)
+        logging.config.dictConfig(config["logging"])
+    lg = logging.getLogger("appLogger")
+    # lg.debug("This is a debug message")
+    return lg
+```
+
+- Check validation for file size, type, and extension
+- These functions will be used to validate the size and type of file uploaded to the app, and ensure that we are getting only the file we want and not something that will crash the app.
+
+```python
+from django.core.exceptions import ValidationError
+from django_apps.utils import get_logger
+from upload_validator import FileTypeValidator
+
+lg = get_logger()
+
+FILE_SIZES = {
+    "2.5MB": 2621440,
+    "5MB": 5242880,
+    "10MB": 10485760,
+    "20MB": 20971520,
+    "50MB": 52428800,
+    "100MB": 104857600,
+    "250MB": 214958080,
+    "500MB": 429916160,
+}
+
+
+def check_validation_file_upload_size(file):
+    lg.debug("Checking file size")
+    lg.debug(str(FILE_SIZES["50MB"]))
+    if file.size > FILE_SIZES["50MB"]:
+        raise ValidationError(f"File should be less than {FILE_SIZES['50MB']}")
+
+
+def check_validation_file_upload_type(file):
+    lg.debug("Checking file type")
+    lg.debug("Checking file extension")
+    validator = FileTypeValidator(
+        allowed_types=["video/mp4"], allowed_extensions=[".mp4"]
+    )
+    return validator(file)
+
+
+def check_validation_file_upload(file):
+    lg.debug("Checking file size, type, and extension")
+    check_validation_file_upload_size(file)
+    check_validation_file_upload_type(file)
+```
 
 ## Additional Information
 
