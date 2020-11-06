@@ -1,4 +1,5 @@
 from django import forms
+from opencv_masker.validators import check_validation_file_upload
 
 
 class VideoUploadForm(forms.Form):
@@ -10,5 +11,8 @@ class VideoUploadForm(forms.Form):
                 "id": "video_upload",
                 "multiple": False,
             }
-        )
+        ),
+        validators=[
+            check_validation_file_upload,
+        ],
     )
