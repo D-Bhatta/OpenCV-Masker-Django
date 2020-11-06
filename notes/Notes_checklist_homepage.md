@@ -57,7 +57,10 @@
 - Add a `ClearableFileInput` widget
 - Set attrs
 - Run and refactor
-- Create validation function `check_validation_file_upload` and pass
+- Create validation function `check_validation_file_upload` for file size, extension and type and `pass`
+- Create functions `check_validation_file_upload_size`, `check_validation_file_upload_type`, `check_validation_file_upload_extension` file size, extension and type and `pass`
 - Add to `validators` parameter
+- Add a logging function
 - Run and refactor
 - Check validation for file size, type, and extension
+- Run and refactor
