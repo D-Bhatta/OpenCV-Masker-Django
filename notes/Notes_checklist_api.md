@@ -27,6 +27,7 @@
 - Create a function `store_file(name: str, path: str, and file: FileType)`
 - Create media root directory
 - Store file in media root directory
+- Add `media/` to `.gitignore`
 - Refactor and run
 
 ## Pass it to class `Masker` function `apply_mask`
@@ -37,13 +38,6 @@
 ## Get output url
 
 - Get output path and add it to `context`
-- Refactor and run
-
-## Render a page where it can be downloaded
-
-- Render a template `view_video.html`
-- Research downloading of the video
-- Show a button that will start download of the video
 - Refactor and run
 
 ## Refactor homepage
