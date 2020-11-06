@@ -1,21 +1,9 @@
-import logging
-import logging.config
-from json import load as jload
-from pathlib import Path
-
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
+from django_apps.utils import get_logger
 from opencv_masker.forms import VideoUploadForm
 
-# Configure logger lg with config for appLogger from config.json["logging"]
-CONFIG_DIR = Path(__file__).resolve().parent.parent.parent.parent
-with open(CONFIG_DIR / "config.json", "r") as f:
-    config = jload(f)
-    logging.config.dictConfig(config["logging"])
-lg = logging.getLogger("appLogger")
-# lg.debug("This is a debug message")
-
-# Create your views here.
+lg = get_logger()
 
 
 def homepage(request):
