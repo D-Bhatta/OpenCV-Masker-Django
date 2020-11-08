@@ -18,7 +18,7 @@ FILE_SIZES = {
 
 def check_validation_file_upload_size(file):
     lg.debug("Checking file size")
-    lg.debug(str(FILE_SIZES["50MB"]))
+    lg.debug(f"File size is {str(file.size)}")
     if file.size > FILE_SIZES["50MB"]:
         raise ValidationError(f"File should be less than {FILE_SIZES['50MB']}")
 

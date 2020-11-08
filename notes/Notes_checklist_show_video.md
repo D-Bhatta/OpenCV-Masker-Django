@@ -19,6 +19,9 @@
 - Create a template `show_video.html`
 - Add a heading
 - Add elements to display output video
+- Research downloading of the video
+- Show a button that will start download of the video
+- Refactor and run
 
 ## Show warning to download or video will disappear
 

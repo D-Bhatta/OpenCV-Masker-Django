@@ -64,12 +64,14 @@ if DJANGO_ENVIRONMENT == "PRODUCTION":
         os.path.join(BASE_DIR, "django_apps/static/django_apps"),
         os.path.join(BASE_DIR, "opencv_masker/static/opencv_masker"),
     ]
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 elif DJANGO_ENVIRONMENT == "DEVELOPMENT":
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "django_apps\\static\\django_apps"),
         os.path.join(BASE_DIR, "opencv_masker\\static\\opencv_masker"),
     ]
     ALLOWED_HOSTS = []
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media\\")
 else:
     pass
 
@@ -167,3 +169,5 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+MEDIA_URL = "/media/"

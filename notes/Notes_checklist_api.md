@@ -7,17 +7,17 @@
 
 ## Main tasks
 
-- Create a view that takes a form request URL, and a `source` variable
+- Create a view that takes a form request
 - Get video from the request and store it if necessary
 - Pass it to class `Masker` function `apply_mask`
-- Get output url
-- Return according to `source`
+- Get output video path
+- Render a page where it can be downloaded
+- Refactor homepage
 
-## Create a view that takes a form request URL, and a `source` variable
+## Create a view that takes a form request
 
-- Create a view function `video` that takes a `source` variable
+- Create a view function `video`
 - Check  if form is valid
-- Check if `source` is `homepage`
 - Add to urls
 - Refactor and run
 
@@ -27,6 +27,7 @@
 - Create a function `store_file(name: str, path: str, and file: FileType)`
 - Create media root directory
 - Store file in media root directory
+- Add `media/` to `.gitignore`
 - Refactor and run
 
 ## Pass it to class `Masker` function `apply_mask`
@@ -39,8 +40,8 @@
 - Get output path and add it to `context`
 - Refactor and run
 
-## Return according to `source`
+## Refactor homepage
 
-- If it is from `homepage` render a template `view_video.html`
-- Else, return output url in response
-- Refactor and run
+- Rewrite the video file when homepage renders
+- Create utility functions.
+- Call function `write_file_to_files` whenever `homepage` loads with media files.

@@ -21,6 +21,13 @@ Notes and code about OpenCV-Masker-Django
     - [Link the form](#link-the-form)
     - [Research how to upload files and use checklists](#research-how-to-upload-files-and-use-checklists)
   - [Modify form to upload files](#modify-form-to-upload-files)
+  - [Create an API that will take the input video, and return an output video url](#create-an-api-that-will-take-the-input-video-and-return-an-output-video-url)
+    - [Main tasks](#main-tasks-2)
+    - [Create a view that takes a form request](#create-a-view-that-takes-a-form-request)
+    - [Get video from the request and store it if necessary](#get-video-from-the-request-and-store-it-if-necessary)
+    - [Pass it to class `Masker` function `apply_mask`](#pass-it-to-class-masker-function-apply_mask)
+    - [Get output url](#get-output-url)
+    - [Refactor homepage](#refactor-homepage)
   - [Additional Information](#additional-information)
     - [Screenshots](#screenshots)
     - [Links](#links)
@@ -546,6 +553,14 @@ if request.method == "POST":
 
 - Link the form to the actual api view
 
+```html
+<form
+    action="{% url 'video' %}"
+    method="POST"
+    enctype="multipart/form-data"
+    >
+```
+
 ### Research how to upload files and use checklists
 
 - Research how to upload files and use checklists
@@ -657,7 +672,7 @@ FILE_SIZES = {
 
 def check_validation_file_upload_size(file):
     lg.debug("Checking file size")
-    lg.debug(str(FILE_SIZES["50MB"]))
+    lg.debug(f"File size is {str(file.size)}")
     if file.size > FILE_SIZES["50MB"]:
         raise ValidationError(f"File should be less than {FILE_SIZES['50MB']}")
 
@@ -675,6 +690,268 @@ def check_validation_file_upload(file):
     lg.debug("Checking file size, type, and extension")
     check_validation_file_upload_size(file)
     check_validation_file_upload_type(file)
+```
+
+## Create an API that will take the input video, and return an output video url
+
+- Create a view at an url that takes a request
+- It extracts the video from the request and stores it
+- It calls the class function with the input video
+- It returns the video url
+
+### Main tasks
+
+- Create a view that takes a form request
+- Get video from the request and store it if necessary
+- Pass it to class `Masker` function `apply_mask`
+- Get output video path
+- Render a page where it can be downloaded
+- Refactor homepage
+
+### Create a view that takes a form request
+
+- Create a view function `video`
+- Check  if form is valid
+- Add to urls
+
+```python
+urlpatterns = [
+    path("home/", views.homepage, name="homepage"),
+    path("video/", views.video, name="video"),
+]
+```
+
+- Refactor and run
+
+### Get video from the request and store it if necessary
+
+- Get video from the request and store it
+- Create a function `store_file(name: str, path: str, and file: FileType)`
+
+```python
+from django.core.files.uploadedfile import TemporaryUploadedFile
+from django_apps.utils import get_logger
+
+lg = get_logger()
+
+
+def store_file(name: str, path: str, file: TemporaryUploadedFile):
+    r"""Stores the file sent in a request body.
+
+    Stores the file sent in the request body with a particular name at a
+    particular place, defined by the `name` and `path` paramteters.
+
+    Parameters
+    ----------
+    name : str
+        Name of the file.
+    path : str
+        Path of the storage location.
+    file: FileType object
+        A python wrapper around a file, sent in a request body.
+
+    Returns
+    -------
+    None
+        Writes the file to a location.
+
+    Raises
+    ------
+    FileNotFoundError
+        When file path doesn't exist.
+
+    Examples
+    --------
+    These are written in doctest format, and should illustrate how to
+    use the function.
+
+    >>> store_file("a.mp4", "", request.FILES['video'])
+    """
+    file_name = path + name
+    try:
+        with open(file_name, "wb+") as file_writer:
+            for chunk in file.chunks():
+                file_writer.write(chunk)
+        lg.debug(f"Written file to {file_name}")
+    except Exception as e:
+        lg.error(str(e))
+```
+
+- Create media root directory
+- Store file in media root directory
+- Add `media/` ROOT directory to `.gitignore`
+- Refactor and run
+
+### Pass it to class `Masker` function `apply_mask`
+
+- Call `Masker.apply_mask` with video path
+- Refactor and run
+
+### Get output url
+
+- Get output path and add it to `context`
+
+```python
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django_apps.settings import MEDIA_ROOT
+from django_apps.utils import get_logger
+from opencv_masker.forms import VideoUploadForm
+from opencv_masker.utils import store_file
+
+lg = get_logger()
+
+
+def homepage(request):
+    # Create form object
+    form = VideoUploadForm()
+
+    # On data sent via form
+    if request.method == "POST":
+        lg.debug("Request is post")
+        return video(request)
+
+    context = {"form": form}
+    lg.debug("Rendering homepage")
+    return render(request, "homepage.html", context)
+
+
+def video(request):
+    lg.debug(request)
+    # On data sent via form
+    if request.method == "POST":
+        lg.debug("Request is post")
+        # set form data in form object
+        form = VideoUploadForm(request.POST, request.FILES)
+        # check form validity
+        if form.is_valid():
+            lg.debug("Form is valid")
+            store_file("input_video.mp4", MEDIA_ROOT, request.FILES["video"])
+            context = {"video_path": "opencv_masker/django_apps/media/output_video.mp4"}
+            return render(request, "dummy.html", context)
+        else:
+            error_message = "Invalid Form:\n" + str(form.errors)
+            lg.error(error_message)
+            raise Http404(error_message)
+    else:
+        raise Http404("Only POST requests are accepted")
+```
+
+### Refactor homepage
+
+- Rewrite the video file when homepage renders
+- Create utility functions.
+
+```python
+def read_binary_file(name: str, path: str) -> bytes:
+    r"""Reads the file and returns a binary object.
+
+    This function reads the file with name `name` at path `path` as a
+    binary object and returns it.
+
+    Parameters
+    ----------
+    name : str
+        A string that specifies the file name.
+    path : str
+        A string that represents the path to the object.
+
+    Returns
+    -------
+    binary_file : bytes
+        THe binary representation of the file.
+
+    Raises
+    ------
+    FileNotFoundError
+        When file path doesn't exist.
+
+    Examples
+    --------
+    Pass a file name and a path to the object.
+
+    >>> print(read_binary_file("a.txt", "/").decode())
+    Hello world
+    """
+    file_name = path + name
+    try:
+        with open(file_name, "rb+") as file_reader:
+            binary_file = file_reader.read()
+            return binary_file
+    except Exception as e:
+        lg.error(str(e))
+
+
+def write_file_to_files(oname: str, opath: str, names: list, paths: list):
+    r"""Overwrite a list of files with one file.
+
+    Overwrite a list of files with names `names` and paths `paths` with a
+    single file with name `oname` and path `opath`.
+
+    Parameters
+    ----------
+    oname : str
+        Name of the file that will overwrite the other files.
+    opath : str
+        Path to the file that will overwrite the other files.
+    names : list
+        List of names of the files that will be overwritten. Each item should
+        be `str`.
+    paths : list
+        List of paths to the files that will be overwritten. Each item should
+        be `str`.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    FileNotFoundError
+        When file path doesn't exist.
+
+    Examples
+    --------
+    Pass the name and path of the file that wiil overwrite the other files.
+    Pass a list of names and a list of paths of the files that will be
+    overwritten.
+
+    >>> write_file_to_files("a.txt", "/", ["1.txt"], ["/"])
+    """
+
+    o_file = read_binary_file(oname, opath)
+    for name, path in zip(names, paths):
+        file_name = path + name
+        try:
+            with open(file_name, "wb+") as file_writer:
+                file_writer.write(o_file)
+                lg.debug(f"Written file to {file_name}")
+        except Exception as e:
+            lg.error(str(e))
+```
+
+- Call function to overwrite the input and output files when the homepage renders.
+
+```python
+def homepage(request):
+    # Create form object
+    form = VideoUploadForm()
+
+    # On data sent via form
+    if request.method == "POST":
+        lg.debug("Request is post")
+        return video(request)
+
+    context = {"form": form}
+    lg.debug("Rendering homepage")
+    write_file_to_files(
+        "sample.mp4",
+        MEDIA_ROOT,
+        ["input_video.mp4", "output_video.mp4"],
+        [MEDIA_ROOT, MEDIA_ROOT],
+    )
+    return render(request, "homepage.html", context)
 ```
 
 ## Additional Information

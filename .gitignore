@@ -137,3 +137,6 @@ ocvm-env/
 
 # Secrets files
 secrets.txt
+
+# Django
+opencv_masker/django_apps/media

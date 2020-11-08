@@ -38,3 +38,9 @@ The input video is required to have a few seconds of background in the first few
 ## Create a view that returns the video in a page
 
 - Create a video page that displays the video
+
+## Future Enhancements
+
+### Overwrite on download
+
+- Trigger the overwriting of the videos whenever the output video is downloaded, instead of when homepage loads.
