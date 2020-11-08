@@ -46,10 +46,10 @@ def store_file(name: str, path: str, file: TemporaryUploadedFile):
         lg.error(str(e))
 
 
-def read_video(name: str, path: str) -> bytes:
-    r"""Reads the video file and returns a binary object.
+def read_binary_file(name: str, path: str) -> bytes:
+    r"""Reads the file and returns a binary object.
 
-    This function reads the video file with name `name` at path `path` as a
+    This function reads the file with name `name` at path `path` as a
     binary object and returns it.
 
     Parameters
@@ -61,8 +61,8 @@ def read_video(name: str, path: str) -> bytes:
 
     Returns
     -------
-    video_file : bytes
-        THe binary representation of the video file.
+    binary_file : bytes
+        THe binary representation of the file.
 
     Raises
     ------
@@ -73,14 +73,14 @@ def read_video(name: str, path: str) -> bytes:
     --------
     Pass a file name and a path to the object.
 
-    >>> print(read_video("a.txt", "/").decode())
+    >>> print(read_binary_file("a.txt", "/").decode())
     Hello world
     """
     file_name = path + name
     try:
         with open(file_name, "rb+") as file_reader:
-            video_file = file_reader.read()
-            return video_file
+            binary_file = file_reader.read()
+            return binary_file
     except Exception as e:
         lg.error(str(e))
 
@@ -122,7 +122,7 @@ def write_file_to_files(oname: str, opath: str, names: list, paths: list):
     >>> write_file_to_files("a.txt", "/", ["1.txt"], ["/"])
     """
 
-    o_file = read_video(oname, opath)
+    o_file = read_binary_file(oname, opath)
     for name, path in zip(names, paths):
         file_name = path + name
         try:
