@@ -8,12 +8,12 @@
 
 - Create a class `Masker`
 - Add an input function that gets the video
-- Add an output function that returns a video url
+- Add an output function that returns a video path
 - Add mask related functions
 - Add a function to apply mask
 - Add video writing functions
 - Add docstrings
-- Refactor and run
+- Refactor and run on pythonAnywhere
 
 ## Create a class `Masker`
 
@@ -30,9 +30,10 @@
 
 ## Add an output function that returns a video url
 
-- Create an output function that returns the output url
+- Create an output function that returns the output path
+
 - Create function `get_video` that returns the path to the video
-- Return a path to one of the static videos for now
+- Return a path to one of the media videos for now
 - Return the return of this function in funtion `apply_mask`
 - Refactor and run
 
