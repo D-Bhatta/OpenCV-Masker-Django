@@ -43,3 +43,5 @@
 ## Refactor homepage
 
 - Rewrite the video file when homepage renders
+- Create utility functions.
+- Call function `write_file_to_files` whenever `homepage` loads with media files.
