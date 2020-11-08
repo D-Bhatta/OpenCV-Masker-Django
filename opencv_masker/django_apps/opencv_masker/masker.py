@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 from django_apps.settings import MEDIA_ROOT
 from django_apps.utils import get_logger
@@ -75,6 +76,8 @@ class Masker:
         self.video_path = video_path
         self.output_path = MEDIA_ROOT + "output_video.mp4"
         self.input_colors = []
+        self.masks = []
+        self.hsv = np.ndarray(1)
 
     def apply_mask(self, video_path: str, colors: list):
         self.video_path = video_path
@@ -103,3 +106,13 @@ class Masker:
                 ranges.append(color["ranges"])
 
         return ranges
+
+    def get_mask(self, color_range: tuple):
+        upper, lower = color_range
+        mask = cv2.inRange(self.hsv, upper, lower)
+        return mask
+
+    def get_masks(self, ranges: list):
+        for color_range in ranges:
+            mask = self.get_mask(color_range)
+            self.masks.append(mask)
