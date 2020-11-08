@@ -672,7 +672,7 @@ FILE_SIZES = {
 
 def check_validation_file_upload_size(file):
     lg.debug("Checking file size")
-    lg.debug(str(FILE_SIZES["50MB"]))
+    lg.debug(f"File size is {str(file.size)}")
     if file.size > FILE_SIZES["50MB"]:
         raise ValidationError(f"File should be less than {FILE_SIZES['50MB']}")
 
@@ -841,6 +841,118 @@ def video(request):
 ### Refactor homepage
 
 - Rewrite the video file when homepage renders
+- Create utility functions.
+
+```python
+def read_binary_file(name: str, path: str) -> bytes:
+    r"""Reads the file and returns a binary object.
+
+    This function reads the file with name `name` at path `path` as a
+    binary object and returns it.
+
+    Parameters
+    ----------
+    name : str
+        A string that specifies the file name.
+    path : str
+        A string that represents the path to the object.
+
+    Returns
+    -------
+    binary_file : bytes
+        THe binary representation of the file.
+
+    Raises
+    ------
+    FileNotFoundError
+        When file path doesn't exist.
+
+    Examples
+    --------
+    Pass a file name and a path to the object.
+
+    >>> print(read_binary_file("a.txt", "/").decode())
+    Hello world
+    """
+    file_name = path + name
+    try:
+        with open(file_name, "rb+") as file_reader:
+            binary_file = file_reader.read()
+            return binary_file
+    except Exception as e:
+        lg.error(str(e))
+
+
+def write_file_to_files(oname: str, opath: str, names: list, paths: list):
+    r"""Overwrite a list of files with one file.
+
+    Overwrite a list of files with names `names` and paths `paths` with a
+    single file with name `oname` and path `opath`.
+
+    Parameters
+    ----------
+    oname : str
+        Name of the file that will overwrite the other files.
+    opath : str
+        Path to the file that will overwrite the other files.
+    names : list
+        List of names of the files that will be overwritten. Each item should
+        be `str`.
+    paths : list
+        List of paths to the files that will be overwritten. Each item should
+        be `str`.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    FileNotFoundError
+        When file path doesn't exist.
+
+    Examples
+    --------
+    Pass the name and path of the file that wiil overwrite the other files.
+    Pass a list of names and a list of paths of the files that will be
+    overwritten.
+
+    >>> write_file_to_files("a.txt", "/", ["1.txt"], ["/"])
+    """
+
+    o_file = read_binary_file(oname, opath)
+    for name, path in zip(names, paths):
+        file_name = path + name
+        try:
+            with open(file_name, "wb+") as file_writer:
+                file_writer.write(o_file)
+                lg.debug(f"Written file to {file_name}")
+        except Exception as e:
+            lg.error(str(e))
+```
+
+- Call function to overwrite the input and output files when the homepage renders.
+
+```python
+def homepage(request):
+    # Create form object
+    form = VideoUploadForm()
+
+    # On data sent via form
+    if request.method == "POST":
+        lg.debug("Request is post")
+        return video(request)
+
+    context = {"form": form}
+    lg.debug("Rendering homepage")
+    write_file_to_files(
+        "sample.mp4",
+        MEDIA_ROOT,
+        ["input_video.mp4", "output_video.mp4"],
+        [MEDIA_ROOT, MEDIA_ROOT],
+    )
+    return render(request, "homepage.html", context)
+```
 
 ## Additional Information
 
