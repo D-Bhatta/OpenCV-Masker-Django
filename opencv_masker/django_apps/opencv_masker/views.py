@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django_apps.settings import MEDIA_ROOT
 from django_apps.utils import get_logger
 from opencv_masker.forms import VideoUploadForm
-from opencv_masker.utils import store_file
+from opencv_masker.utils import store_file, write_file_to_files
 
 lg = get_logger()
 
@@ -20,6 +20,12 @@ def homepage(request):
 
     context = {"form": form}
     lg.debug("Rendering homepage")
+    write_file_to_files(
+        "sample.mp4",
+        MEDIA_ROOT,
+        ["input_video.mp4", "output_video.mp4"],
+        [MEDIA_ROOT, MEDIA_ROOT],
+    )
     return render(request, "homepage.html", context)
 
 
