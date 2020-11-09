@@ -93,6 +93,7 @@ class Masker:
         return self.get_video()
 
     def get_video(self):
+        self.gen_video()
         return self.output_path
 
     def get_colors(self):
@@ -107,12 +108,71 @@ class Masker:
 
         return ranges
 
-    def get_mask(self, color_range: tuple):
+    def get_mask(self, color_range: tuple, hsv):
         upper, lower = color_range
-        mask = cv2.inRange(self.hsv, upper, lower)
+        mask = cv2.inRange(hsv, lower, upper)  # pylint: disable=no-member
         return mask
 
-    def get_masks(self, ranges: list):
+    def get_masks(self, ranges: list, hsv):
         for color_range in ranges:
-            mask = self.get_mask(color_range)
+            mask = self.get_mask(color_range, hsv)
             self.masks.append(mask)
+        return self.masks
+
+    def add_masks(self, masks=None):
+        if not masks:
+            mask = self.masks[0]
+            for i in range(1, len(self.masks)):
+                mask = mask + self.masks[i]
+            return mask
+        else:
+            mask = masks[0]
+            for i in range(1, len(masks)):
+                mask = mask + masks[i]
+            return mask
+
+    def and_masks(self):
+        mask = self.masks[0]
+        for i in range(1, len(self.masks)):
+            mask = cv2.bitwise_and(
+                mask, self.masks[i]
+            )  # pylint: disable=no-member
+        return mask
+
+    def gen_mask(self, img):
+
+        # Convert to hsv color range
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # pylint: disable=no-member
+
+        # get the ranges for a color
+        ranges = self.get_colors()
+
+        # get the masks
+        masks = self.get_masks(ranges, hsv)
+
+        # Add all the masks
+        mask = self.add_masks(masks)
+
+        return mask
+
+    def refine_mask(self, mask):
+
+        mask = cv2.morphologyEx(
+            mask, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8), iterations=1
+        )  # pylint: disable=no-member
+        mask = cv2.dilate(
+            mask, np.ones((3, 3), np.uint8), iterations=1
+        )  # pylint: disable=no-member
+
+    def get_res(self, images: list):
+        results = []
+        for image in images:
+            img1, img2, mask = image
+            res = cv2.bitwise_and(
+                img1, img2, mask=mask
+            )  # pylint: disable=no-member
+            results.append(res)
+        return results
+
+    def gen_video(self):
+        pass
