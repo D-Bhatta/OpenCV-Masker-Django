@@ -20,7 +20,7 @@
 - Create a module `masker.py`
 - Create a class `Masker`
 - Initialize it with `video_path` for input video
-- Initialize it with `colors` for `list` of colors
+- Initialize it with `colors` for `dict` of colors
 - Refactor and run
 
 ## Add an input function that gets the video
@@ -43,7 +43,7 @@
 - Function `get_mask` to create and return a mask of a color
 - Function `get_masks` to create a list of masks from an input list of colors
 - Function `add_masks` to add list of masks
-- Function `or_masks` to or list of masks
+- Function `and_masks` to `and` list of masks
 - Function `gen_mask` to generate mask from a video
 - Function `refine_mask` to refine masks
 - Refactor and run
@@ -55,6 +55,14 @@
 
 ## Add video writing functions
 
-- Function `write_video` to write video stream
 - Function `gen_output_video` to iterate over the video and write it
 - Refactor and run
+
+## Add more colors
+
+- Add `RED` color to `colors` dict
+
+## Refactor the class
+
+- The class doesn't seem to work.
+- Rather than find the bug, refactor it into fewer methods.
