@@ -1016,59 +1016,44 @@ lg = get_logger()
 
 
 class Masker:
-    r"""The summary line for a class docstring should fit on one line.
+    r"""Class for performing masking functions on an input video.
 
-    If the class has public attributes, they may be documented here
-    in an ``Attributes`` section and follow the same formatting as a
-    function's ``Args`` section. Alternatively, attributes may be documented
-    inline with the attribute's declaration (see __init__ method below).
+    This class abstracts away the logic of creating a mask from a color and
+    using it to replace the masked region with a mask of the background
+    instead.
 
-    Properties created with the ``@property`` decorator should be documented
-    in the property's getter method.
+    The class uses OpenCV functions and logs information as it operates.
+
+    Supported colors:
+    ----------
+    BLUE
 
     Attributes
     ----------
-    attr1 : str
-        Description of `attr1`.
-    attr2 : :obj:`int`, optional
-        Description of `attr2`.
+    colors : dict
+        Dict of color values supported by the class. Contains sub dictionaries
+        that hold information needed to create masks of that color.
+    output_path : str
+        Path to the output video file.
 
     Parameters
     ----------
-    attr1 : str
-        Description of `attr1`.
-    attr2 : :obj:`int`, optional
-        Description of `attr2`.
+    video_path : str
+        Path to the input video.
 
     Methods
     ----------
-    method_name(c='rgb')
-        Description of public `method_name`.
-    method_name(signature)
-        Description of public `method_name`.
+    apply_mask(video_path: str, colors: list)
+        Call this method to apply masks to an input video from a list of
+        colors. Colors should be in CAPITAL letters.
 
     Examples
     --------
-    These are written in doctest format, and should illustrate how to
-    use the function.
+    Create a Masker object and call the `apply_mask` method.
 
-    >>> from view_api.models import APIInfo
-    >>> a1 = APIInfo(
-    ...     name = "APOD",
-    ...     description = "Astronomy Picture of the Day",
-    ...     link = "https://api.nasa.gov/planetary/apod",
-    ...     image = "img/1.jpg",
-    ... )
-    >>> a1.save()
-    asyncio - 2020-10-18 05:53:05,483-5384-DEBUG-Using proactor: IocpProactor
-    >>> a2 = APIInfo(
-    ...     name = "EPIC",
-    ...     description = "Latest Images from Earth Polychromatic Imaging Camera",
-    ...     link = "https://api.nasa.gov/EPIC/api/natural",
-    ...     image = "img/2.png",
-    ... )
-    >>> ...
-    >>> a2.save()
+    >>> from masker import Masker
+    >>> maskr = Masker()
+    >>> maskr.apply_mask(MEDIA_ROOT + "video_path.mp4", "BLUE")
     """
 
     def __init__(self, video_path=""):
