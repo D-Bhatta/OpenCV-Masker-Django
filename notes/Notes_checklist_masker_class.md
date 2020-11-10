@@ -42,20 +42,12 @@
 - Function `get_colors` to get dict of colors and their ranges
 - Function `get_mask` to create and return a mask of a color
 - Function `get_masks` to create a list of masks from an input list of colors
-- Function `add_masks` to add list of masks
-- Function `and_masks` to `and` list of masks
-- Function `gen_mask` to generate mask from a video
 - Function `refine_mask` to refine masks
-- Refactor and run
-
-## Add a function to apply mask
-
-- Function `get_res` to generate final resources
 - Refactor and run
 
 ## Add video writing functions
 
-- Function `gen_output_video` to iterate over the video and write it
+- Function `gen_video` to iterate over the video and write it
 - Refactor and run
 
 ## Add more colors
