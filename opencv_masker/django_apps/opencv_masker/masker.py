@@ -5,6 +5,8 @@ from django_apps.utils import get_logger
 
 lg = get_logger()
 
+# pylint: disable=no-member
+
 
 class Masker:
     r"""The summary line for a class docstring should fit on one line.
@@ -78,6 +80,7 @@ class Masker:
         self.input_colors = []
         self.masks = []
         self.hsv = np.ndarray(1)
+        self.ranges = []
 
     def apply_mask(self, video_path: str, colors: list):
         self.video_path = video_path
@@ -97,18 +100,20 @@ class Masker:
         return self.output_path
 
     def get_colors(self):
-        ranges = []
+
         for color_name in self.input_colors:
             color = self.colors[color_name]
             if color["multiple"]:
                 for i in range(color["num"]):
-                    ranges.append(color["ranges"][i])
+                    self.ranges.append(color["ranges"][i])
             else:
-                ranges.append(color["ranges"])
+                self.ranges.append(color["ranges"])
 
-        return ranges
+        lg.debug(self.ranges)
+        return self.ranges
 
     def get_mask(self, color_range: tuple, hsv):
+        lg.debug(color_range)
         upper, lower = color_range
         mask = cv2.inRange(hsv, lower, upper)  # pylint: disable=no-member
         return mask
@@ -120,16 +125,10 @@ class Masker:
         return self.masks
 
     def add_masks(self, masks=None):
-        if not masks:
-            mask = self.masks[0]
-            for i in range(1, len(self.masks)):
-                mask = mask + self.masks[i]
-            return mask
-        else:
-            mask = masks[0]
-            for i in range(1, len(masks)):
-                mask = mask + masks[i]
-            return mask
+        mask = masks[0]
+        for i in range(1, len(masks)):
+            mask = mask + masks[i]
+        return mask
 
     def and_masks(self):
         mask = self.masks[0]
@@ -164,6 +163,8 @@ class Masker:
             mask, np.ones((3, 3), np.uint8), iterations=1
         )  # pylint: disable=no-member
 
+        return mask
+
     def get_res(self, images: list):
         results = []
         for image in images:
@@ -175,4 +176,45 @@ class Masker:
         return results
 
     def gen_video(self):
-        pass
+        captured_video = cv2.VideoCapture(self.video_path)
+        lg.debug(captured_video)
+        shape = int(captured_video.get(cv2.CAP_PROP_FRAME_WIDTH)), int(
+            captured_video.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        )
+        lg.debug(shape)
+        # For the first 50 frames, get the video background pixels
+
+        background = 0
+        for i in range(50):
+            return_value, background = captured_video.read()
+            if return_value == False:
+                continue
+
+        # Flip the frame array so that we get the pixels mirrored
+        background = np.flip(background, axis=1)
+
+        count = 0
+        fourcc = cv2.VideoWriter_fourcc(*"MP4V")
+        output_writer = cv2.VideoWriter(self.output_path, fourcc, 20.0, shape)
+
+        while captured_video.isOpened():
+            return_val, img = captured_video.read()
+            if not return_val:
+                break
+            count += 1
+            img = np.flip(img, axis=1)
+
+            mask = self.gen_mask(img)
+            mask = self.refine_mask(mask)
+            inv_mask = cv2.bitwise_not(mask)
+
+            results = self.get_res(
+                [(background, background, mask), (img, img, inv_mask)]
+            )
+            bg, fg = results[0], results[1]
+
+            output = cv2.addWeighted(bg, 1, fg, 1, 0)
+
+            output_writer.write(output)
+
+            lg.debug(f"Writing frame {count}")
