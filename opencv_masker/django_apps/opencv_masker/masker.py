@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import numpy as np
 from django_apps.settings import MEDIA_ROOT
@@ -78,9 +80,6 @@ class Masker:
         self.video_path = video_path
         self.output_path = MEDIA_ROOT + "output_video.mp4"
         self.input_colors = []
-        self.masks = []
-        self.hsv = np.ndarray(1)
-        self.ranges = []
 
     def apply_mask(self, video_path: str, colors: list):
         self.video_path = video_path
@@ -100,29 +99,29 @@ class Masker:
         return self.output_path
 
     def get_colors(self):
-
+        ranges = []
         for color_name in self.input_colors:
             color = self.colors[color_name]
             if color["multiple"]:
                 for i in range(color["num"]):
-                    self.ranges.append(color["ranges"][i])
+                    ranges.append(color["ranges"][i])
             else:
-                self.ranges.append(color["ranges"])
+                ranges.append(color["ranges"])
 
-        lg.debug(self.ranges)
-        return self.ranges
+        return ranges
 
     def get_mask(self, color_range: tuple, hsv):
-        lg.debug(color_range)
-        upper, lower = color_range
+        # lg.debug(color_range)
+        lower, upper = color_range
         mask = cv2.inRange(hsv, lower, upper)  # pylint: disable=no-member
         return mask
 
-    def get_masks(self, ranges: list, hsv):
+    def get_masks(self, ranges: list, hsv) -> list:
+        masks = []
         for color_range in ranges:
             mask = self.get_mask(color_range, hsv)
-            self.masks.append(mask)
-        return self.masks
+            masks.append(mask)
+        return masks
 
     def add_masks(self, masks=None):
         mask = masks[0]
@@ -133,9 +132,9 @@ class Masker:
     def and_masks(self):
         mask = self.masks[0]
         for i in range(1, len(self.masks)):
-            mask = cv2.bitwise_and(
+            mask = cv2.bitwise_and(  # pylint: disable=no-member
                 mask, self.masks[i]
-            )  # pylint: disable=no-member
+            )
         return mask
 
     def gen_mask(self, img):
@@ -156,12 +155,12 @@ class Masker:
 
     def refine_mask(self, mask):
 
-        mask = cv2.morphologyEx(
+        mask = cv2.morphologyEx(  # pylint: disable=no-member
             mask, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8), iterations=1
-        )  # pylint: disable=no-member
-        mask = cv2.dilate(
+        )
+        mask = cv2.dilate(  # pylint: disable=no-member
             mask, np.ones((3, 3), np.uint8), iterations=1
-        )  # pylint: disable=no-member
+        )
 
         return mask
 
@@ -176,12 +175,16 @@ class Masker:
         return results
 
     def gen_video(self):
+        ranges = self.get_colors()
+        lg.debug(ranges)
+
         captured_video = cv2.VideoCapture(self.video_path)
         lg.debug(captured_video)
+        time.sleep(2)
         shape = int(captured_video.get(cv2.CAP_PROP_FRAME_WIDTH)), int(
             captured_video.get(cv2.CAP_PROP_FRAME_HEIGHT)
         )
-        lg.debug(shape)
+        lg.info(f"Dimensions of the video: {shape}")
         # For the first 50 frames, get the video background pixels
 
         background = 0
@@ -204,17 +207,28 @@ class Masker:
             count += 1
             img = np.flip(img, axis=1)
 
-            mask = self.gen_mask(img)
-            mask = self.refine_mask(mask)
-            inv_mask = cv2.bitwise_not(mask)
+            # Convert to hsv color range
+            hsv = cv2.cvtColor(
+                img, cv2.COLOR_BGR2HSV
+            )  # pylint: disable=no-member
+            masks = self.get_masks(ranges, hsv)
 
-            results = self.get_res(
-                [(background, background, mask), (img, img, inv_mask)]
-            )
-            bg, fg = results[0], results[1]
+            mask1 = masks[0]
+            # lg.debug(mask1)
+            if len(masks) > 1:
+                for i in range(1, len(masks)):
+                    mask1 = mask1 + masks[i]
+            # lg.debug(mask1)
 
-            output = cv2.addWeighted(bg, 1, fg, 1, 0)
+            mask1 = self.refine_mask(mask1)
+            # lg.debug(mask1)
+            inv_mask = cv2.bitwise_not(mask1)
+            # lg.debug(inv_mask)
 
-            output_writer.write(output)
+            res1 = cv2.bitwise_and(background, background, mask=mask1)
+            res2 = cv2.bitwise_and(img, img, mask=inv_mask)
+            final_output = cv2.addWeighted(res1, 1, res2, 1, 0)
 
-            lg.debug(f"Writing frame {count}")
+            output_writer.write(final_output)
+
+        lg.info(f"Wrote frames: {count}")
