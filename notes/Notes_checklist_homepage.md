@@ -71,11 +71,12 @@
 
 - Research how to dropdown list to a django form
 - Add `RED` and `BLUE` to it
+- - Create a tuple `colors` of choices from colors list in `Masker.colors`
+- Create a `ChoiceField` `color` and pass `colors` to it.
 - Run and refactor
 
 ## Refactor `views.video` to call `Masker.apply_mask` with color in form
 
-- Research how to get the color value from the form
 - Get the color value from the form
 - Turn it into a list and pass it to `Masker.apply_mask`
 - Run and refactor
