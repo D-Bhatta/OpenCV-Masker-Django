@@ -4,7 +4,7 @@ from opencv_masker.validators import check_validation_file_upload
 
 masker = Masker()
 colors = masker.colors.keys()
-colors = tuple([(str(i), color) for i, color in enumerate(colors)])
+colors = tuple([(color, color) for color in colors])
 
 
 class VideoUploadForm(forms.Form):
