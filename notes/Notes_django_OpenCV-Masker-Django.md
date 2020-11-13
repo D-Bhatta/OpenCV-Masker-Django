@@ -1215,6 +1215,27 @@ def gen_video(self):
 
 - Add `RED` color to `colors` dict
 
+```python
+self.colors = {
+    "BLUE": {
+        "multiple": True,
+        "num": 2,
+        "ranges": [
+            (np.array([75, 125, 20]), np.array([95, 255, 255])),
+            (np.array([95, 125, 20]), np.array([130, 255, 255])),
+        ],
+    },
+    "RED": {
+        "multiple": True,
+        "num": 2,
+        "ranges": [
+            (np.array([100, 40, 40]), np.array([100, 255, 255])),
+            (np.array([155, 40, 40]), np.array([180, 255, 255])),
+        ],
+    },
+}
+```
+
 ### Refactor the class
 
 - The class doesn't seem to work.
