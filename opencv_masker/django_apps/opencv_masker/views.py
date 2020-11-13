@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django_apps.settings import MEDIA_ROOT
 from django_apps.utils import get_logger
 from opencv_masker.forms import VideoUploadForm
+from opencv_masker.masker import Masker
 from opencv_masker.utils import store_file, write_file_to_files
 
 lg = get_logger()
@@ -40,7 +41,9 @@ def video(request):
         if form.is_valid():
             lg.debug("Form is valid")
             store_file("input_video.mp4", MEDIA_ROOT, request.FILES["video"])
-            return render(request, "dummy.html", {})
+            masker = Masker()
+            masker.apply_mask(MEDIA_ROOT + "input_video.mp4", ["BLUE"])
+            return HttpResponseRedirect("/masker/show_video/")
         else:
             error_message = "Invalid Form:\n" + str(form.errors)
             lg.error(error_message)

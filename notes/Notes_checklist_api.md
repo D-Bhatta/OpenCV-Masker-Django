@@ -33,6 +33,7 @@
 ## Pass it to class `Masker` function `apply_mask`
 
 - Call `Masker.apply_mask` with video path
+- Redirect to `show_video`
 - Refactor and run
 
 ## Get output url
