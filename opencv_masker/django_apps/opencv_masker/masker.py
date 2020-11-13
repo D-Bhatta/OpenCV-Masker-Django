@@ -61,6 +61,14 @@ class Masker:
                     (np.array([95, 125, 20]), np.array([130, 255, 255])),
                 ],
             },
+            "RED": {
+                "multiple": True,
+                "num": 2,
+                "ranges": [
+                    (np.array([100, 40, 40]), np.array([100, 255, 255])),
+                    (np.array([155, 40, 40]), np.array([180, 255, 255])),
+                ],
+            },
         }
         self.video_path = video_path
         self.output_path = MEDIA_ROOT + "output_video.mp4"
