@@ -41,8 +41,10 @@ def video(request):
         if form.is_valid():
             lg.debug("Form is valid")
             store_file("input_video.mp4", MEDIA_ROOT, request.FILES["video"])
+            color = form.cleaned_data["color"]
+            lg.info(f"Color selected: {color}")
             masker = Masker()
-            masker.apply_mask(MEDIA_ROOT + "input_video.mp4", ["BLUE"])
+            masker.apply_mask(MEDIA_ROOT + "input_video.mp4", [color])
             return HttpResponseRedirect("/masker/show_video/")
         else:
             error_message = "Invalid Form:\n" + str(form.errors)
