@@ -12,6 +12,8 @@
 - Add the videos
 - Link the form
 - Research how to upload files and use checklists
+- Add a form check list with `blue` and `red` on it
+- Refactor `views.video` to call `Masker.apply_mask` with color in form
 
 ## Create a view
 
@@ -63,4 +65,17 @@
 - Add a logging function
 - Run and refactor
 - Check validation for file size, type, and extension
+- Run and refactor
+
+## Add a form check list with `blue` and `red` on it
+
+- Research how to dropdown list to a django form
+- Add `RED` and `BLUE` to it
+- Run and refactor
+
+## Refactor `views.video` to call `Masker.apply_mask` with color in form
+
+- Research how to get the color value from the form
+- Get the color value from the form
+- Turn it into a list and pass it to `Masker.apply_mask`
 - Run and refactor
