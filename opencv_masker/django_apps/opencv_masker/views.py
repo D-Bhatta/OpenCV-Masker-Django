@@ -1,4 +1,4 @@
-from django.http import Http404, HttpResponseRedirect
+from django.http import FileResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django_apps.settings import MEDIA_ROOT
@@ -40,13 +40,33 @@ def video(request):
         if form.is_valid():
             lg.debug("Form is valid")
             store_file("input_video.mp4", MEDIA_ROOT, request.FILES["video"])
-            context = {
-                "video_path": "opencv_masker/django_apps/media/output_video.mp4"
-            }
-            return render(request, "dummy.html", context)
+            return render(request, "dummy.html", {})
         else:
             error_message = "Invalid Form:\n" + str(form.errors)
             lg.error(error_message)
             raise Http404(error_message)
     else:
         raise Http404("Only POST requests are accepted")
+
+
+def show_video(request):
+    lg.debug(request)
+
+    context = {"filename": "output_video.mp4"}
+    return render(request, "show_video.html", context)
+
+
+def download(request, filename):
+    lg.debug(request)
+    try:
+
+        filepath = MEDIA_ROOT + filename
+        lg.info(f"Setting up {filename} for download at {filepath}")
+
+        response = FileResponse(
+            open(filepath, "rb+"), as_attachment=True, filename=filename
+        )
+        return response
+    except Exception as e:
+        lg.error(e)
+        return Http404("File download error")
