@@ -25,7 +25,6 @@ Notes and code about OpenCV-Masker-Django
     - [Main tasks](#main-tasks-2)
     - [Create a view that takes a form request](#create-a-view-that-takes-a-form-request)
     - [Get video from the request and store it if necessary](#get-video-from-the-request-and-store-it-if-necessary)
-    - [Pass it to class `Masker` function `apply_mask`](#pass-it-to-class-masker-function-apply_mask)
     - [Get output url](#get-output-url)
     - [Refactor homepage](#refactor-homepage)
   - [Create a class that will mask colors in a video](#create-a-class-that-will-mask-colors-in-a-video)
@@ -42,6 +41,7 @@ Notes and code about OpenCV-Masker-Django
     - [Create a view and url to display the video with context](#create-a-view-and-url-to-display-the-video-with-context)
   - [Create a template to display the video](#create-a-template-to-display-the-video)
     - [Show warning to download or video will disappear](#show-warning-to-download-or-video-will-disappear)
+    - [Pass it to class `Masker` function `apply_mask`](#pass-it-to-class-masker-function-apply_mask)
   - [Additional Information](#additional-information)
     - [Screenshots](#screenshots)
     - [Links](#links)
@@ -796,11 +796,6 @@ def store_file(name: str, path: str, file: TemporaryUploadedFile):
 - Add `media/` ROOT directory to `.gitignore`
 - Refactor and run
 
-### Pass it to class `Masker` function `apply_mask`
-
-- Call `Masker.apply_mask` with video path
-- Refactor and run
-
 ### Get output url
 
 - Get output path and add it to `context`
@@ -1344,6 +1339,19 @@ path("download/<str:filename>/", views.download, name="download"),
 ### Show warning to download or video will disappear
 
 - Add text that says `Save video or it will be deleted`
+
+### Pass it to class `Masker` function `apply_mask`
+
+- Call `Masker.apply_mask` with video path
+- Redirect to `show_video`
+
+```python
+masker = Masker()
+masker.apply_mask(MEDIA_ROOT + "input_video.mp4", ["BLUE"])
+return HttpResponseRedirect("/masker/show_video/")
+```
+
+- Refactor and run
 
 ## Additional Information
 
