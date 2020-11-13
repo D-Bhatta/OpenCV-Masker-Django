@@ -42,6 +42,8 @@ Notes and code about OpenCV-Masker-Django
   - [Create a template to display the video](#create-a-template-to-display-the-video)
     - [Show warning to download or video will disappear](#show-warning-to-download-or-video-will-disappear)
     - [Pass it to class `Masker` function `apply_mask`](#pass-it-to-class-masker-function-apply_mask)
+  - [Add a form check list with `blue` and `red` on it](#add-a-form-check-list-with-blue-and-red-on-it)
+  - [Refactor `views.video` to call `Masker.apply_mask` with color in form](#refactor-viewsvideo-to-call-maskerapply_mask-with-color-in-form)
   - [Additional Information](#additional-information)
     - [Screenshots](#screenshots)
     - [Links](#links)
@@ -1373,6 +1375,46 @@ return HttpResponseRedirect("/masker/show_video/")
 ```
 
 - Refactor and run
+
+## Add a form check list with `blue` and `red` on it
+
+- Research how to dropdown list to a django form
+- Add `RED` and `BLUE` to it
+- Create a tuple `colors` of choices from colors list in `Masker.colors`
+- Create a `ChoiceField` `color` and pass `colors` to it.
+- Run and refactor
+
+```python
+masker = Masker()
+colors = masker.colors.keys()
+colors = tuple([(color, color) for color in colors])
+
+
+class VideoUploadForm(forms.Form):
+    video = forms.FileField(
+        widget=forms.ClearableFileInput(
+            attrs={
+                "label": "Choose a file",
+                "name": "video_upload",
+                "id": "video_upload",
+                "multiple": False,
+            }
+        ),
+        validators=[check_validation_file_upload],
+    )
+    color = forms.ChoiceField(choices=colors)
+```
+
+## Refactor `views.video` to call `Masker.apply_mask` with color in form
+
+- Get the color value from the form
+- Turn it into a list and pass it to `Masker.apply_mask`
+- Run and refactor
+
+```python
+color = form.cleaned_data["color"]
+lg.info(f"Color selected: {color}")
+```
 
 ## Additional Information
 
