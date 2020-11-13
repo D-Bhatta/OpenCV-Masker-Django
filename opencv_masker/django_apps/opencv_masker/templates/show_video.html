@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<head>
+  <title>OpenCV Masker</title>
+</head>
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h1>Download the Masked Video</h1>
+        <p>
+          Save the video by downloading it. To save memory, it will soon be
+          deleted and overwritten.
+        </p>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="xs">
+        <aside>
+          <dl>
+            <vstack>
+              <vstack class="pa-s">
+                <h3>Download video</h3>
+                <p>Save video or it will be deleted</p>
+              </vstack>
+              <hr />
+              <vstack spacing="m" class="pa-s">
+                <vstack align-x="center">
+                  <button type="download" name="download_button">
+                    <a href="{% url 'download' filename %}"
+                      ><h2>Download Video</h2></a
+                    >
+                  </button>
+                </vstack>
+              </vstack>
+            </vstack>
+          </dl>
+        </aside>
+      </vstack>
+      <spacer></spacer>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
