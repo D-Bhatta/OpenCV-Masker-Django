@@ -35,8 +35,13 @@ Notes and code about OpenCV-Masker-Django
     - [Add an output function that returns a video url](#add-an-output-function-that-returns-a-video-url)
     - [Add mask related functions](#add-mask-related-functions)
     - [Add video writing functions](#add-video-writing-functions)
-  - [Add more colors](#add-more-colors)
-  - [Refactor the class](#refactor-the-class)
+    - [Add more colors](#add-more-colors)
+    - [Refactor the class](#refactor-the-class)
+  - [Create a view that returns the video in a page](#create-a-view-that-returns-the-video-in-a-page)
+    - [Main tasks](#main-tasks-4)
+    - [Create a view and url to display the video with context](#create-a-view-and-url-to-display-the-video-with-context)
+  - [Create a template to display the video](#create-a-template-to-display-the-video)
+    - [Show warning to download or video will disappear](#show-warning-to-download-or-video-will-disappear)
   - [Additional Information](#additional-information)
     - [Screenshots](#screenshots)
     - [Links](#links)
@@ -1211,14 +1216,134 @@ def gen_video(self):
 
 - Refactor and run
 
-## Add more colors
+### Add more colors
 
 - Add `RED` color to `colors` dict
 
-## Refactor the class
+### Refactor the class
 
 - The class doesn't seem to work.
 - Rather than find the bug, refactor it into fewer methods.
+
+## Create a view that returns the video in a page
+
+- Create a video page that displays the video
+
+### Main tasks
+
+- Create a view and url to display the video with context
+- Create a template to display the video
+- Show warning to download or video will disappear
+
+### Create a view and url to display the video with context
+
+- Create a view `show_video` to display the video
+
+```python
+def show_video(request):
+    lg.debug(request)
+
+    context = {"filename": "output_video.mp4"}
+    return render(request, "show_video.html", context)
+```
+
+- Create a `context` dict with url of the output video
+- Add url as `show_video/`
+
+```python
+path("show_video/", views.show_video, name="show_video"),
+```
+
+
+## Create a template to display the video
+
+- Create a template `show_video.html`
+
+```html
+{% extends "base.html" %} {% load static %} {% block header_content %}
+{{block.super }}
+<head>
+  <title>OpenCV Masker</title>
+</head>
+<body>
+  <main>
+    <vstack spacing="m">
+      <vstack spacing="s" stretch="" align-x="center" align-y="center">
+        <h1>Download the Masked Video</h1>
+        <p>
+          Save the video by downloading it. To save memory, it will soon be
+          deleted and overwritten.
+        </p>
+      </vstack>
+      <spacer></spacer>
+      <vstack spacing="xs">
+        <aside>
+          <dl>
+            <vstack>
+              <vstack class="pa-s">
+                <h3>Download video</h3>
+                <p>Save video or it will be deleted</p>
+              </vstack>
+              <hr />
+              <vstack spacing="m" class="pa-s">
+                <vstack align-x="center">
+                  <button type="download" name="download_button">
+                    <a href="{% url 'download' filename %}"
+                      ><h2>Download Video</h2></a
+                    >
+                  </button>
+                </vstack>
+              </vstack>
+            </vstack>
+          </dl>
+        </aside>
+      </vstack>
+      <spacer></spacer>
+    </vstack>
+  </main>
+</body>
+{% endblock header_content %}
+
+```
+
+- Add a heading
+- Add elements to display output video
+- Research downloading of the video
+- Create a `download` view
+
+```python
+def download(request, filename):
+    lg.debug(request)
+    try:
+
+        filepath = MEDIA_ROOT + filename
+        lg.info(f"Setting up {filename} for download at {filepath}")
+
+        response = FileResponse(
+            open(filepath, "rb+"), as_attachment=True, filename=filename
+        )
+        return response
+    except Exception as e:
+        lg.error(e)
+        return Http404("File download error")
+```
+
+- Add url as `"download/<str:filename>/"`
+
+```python
+path("download/<str:filename>/", views.download, name="download"),
+```
+
+- Return `filename` in context
+- Create a `filepath` with `MEDIA_ROOT` + `filename`
+- Create a `FileResponse` object and return it
+- If there is an exception, return `404`
+- Show a button that will start download of the video and put the URL inside it.
+- Refactor and run
+
+### Show warning to download or video will disappear
+
+- Add text that says `Save video or it will be deleted`
 
 ## Additional Information
 

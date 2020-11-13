@@ -20,7 +20,13 @@
 - Add a heading
 - Add elements to display output video
 - Research downloading of the video
-- Show a button that will start download of the video
+- Create a `download` view
+- Add url as `"download/<str:filename>/"`
+- Return `filename` in context
+- Create a `filepath` with `MEDIA_ROOT` + `filename`
+- Create a `FileResponse` object and return it
+- If there is an exception, return `404`
+- Show a button that will start download of the video and put the URL inside
 - Refactor and run
 
 ## Show warning to download or video will disappear
