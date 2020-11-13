@@ -71,7 +71,7 @@
 
 - Research how to dropdown list to a django form
 - Add `RED` and `BLUE` to it
-- - Create a tuple `colors` of choices from colors list in `Masker.colors`
+- Create a tuple `colors` of choices from colors list in `Masker.colors`
 - Create a `ChoiceField` `color` and pass `colors` to it.
 - Run and refactor
 

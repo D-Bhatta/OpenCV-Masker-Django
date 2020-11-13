@@ -1272,7 +1272,6 @@ def show_video(request):
 path("show_video/", views.show_video, name="show_video"),
 ```
 
-
 ## Create a template to display the video
 
 - Create a template `show_video.html`
