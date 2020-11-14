@@ -10,6 +10,4 @@ script:
   - black --line-length=79 --check .
   - pytest
 env:
-  - PYTHONBREAKPOINT=0
-  - DJANGO_ENVIRONMENT=DEVELOPMENT
-  - DJANGO_HOST_NAME=localhost
+  - PYTHONBREAKPOINT=0 DJANGO_ENVIRONMENT=DEVELOPMENT DJANGO_HOST_NAME=localhost
