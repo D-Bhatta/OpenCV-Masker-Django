@@ -8,6 +8,6 @@ install:
   - pip install tox-travis
 script:
   - black --line-length=79 --check .
-  - pytest
+  - tox
 env:
   - PYTHONBREAKPOINT=0 DJANGO_ENVIRONMENT=DEVELOPMENT DJANGO_HOST_NAME=localhost
