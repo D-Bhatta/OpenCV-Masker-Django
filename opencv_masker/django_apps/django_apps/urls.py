@@ -18,5 +18,5 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("masker/", include("opencv_masker.urls")),
+    path("masker/", include("opencv_masker.urls", namespace="opencv_masker")),
 ]
