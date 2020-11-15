@@ -30,4 +30,5 @@
 ## Set running tests as a pre-commit hook
 
 - Set a `pytest` command in `.travis.yml`
+- Set a pre-commit hook for pytest
 - Run and refactor
